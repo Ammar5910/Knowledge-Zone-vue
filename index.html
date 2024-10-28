@@ -2,16 +2,177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <metaviewport" 'nt="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .nav-top {
+            background-color: #c41e3a; /* Dark red color from image */
+            padding: 0.5rem;
+        }
+
+        .nav-main {
+            background-color: #333;
+            padding: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            padding: 0 1rem;
+        }
+
+        .logo i {
+            color: #4CAF50;
+        }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 1rem;
+            z-index: 1;
+            border-radius: 4px;
+            color: #333;
+            top: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .nav-link:hover .dropdown-content {
+            display: block;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            margin: 0 1rem;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .nav-button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkout-btn i {
+            font-size: 1.2rem;
+        }
+
+        .classes-container {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .class-card img {
+            width: 100%;
+            max-width: 150px;
+            margin-bottom: 1rem;
+        }
+    </style>
     <title>Knowledge Zone</title>
 </head>
 <body>
     <div id="app">
-        <h1>Knowledge Zone</h1>
-        <p v-for="item in classes" v-text="item"></p>
+        <nav class="nav-top">
+            <!-- Top red bar -->
+        </nav>
+        <nav class="nav-main">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="nav-items">
+                <div class="nav-link">
+                    INFO
+                    <div class="dropdown-content">
+                        <p>About Knowledge Zone</p>
+                        <p>Our Services</p>
+                        <p>Learning Resources</p>
+                    </div>
+                </div>
+                <div class="nav-link">
+                    CONTACT
+                    <div class="dropdown-content">
+                        <p>Email: contact@knowledgezone.com</p>
+                        <p>Phone: (123) 456-7890</p>
+                        <p>Location: Education Center</p>
+                    </div>
+                </div>
+                <input type="text" class="search-bar" placeholder="Search for classes...">
+                <button class="nav-button">
+                    <i class="fas fa-sort"></i>
+                    SORT
+                </button>
+                <button class="nav-button checkout-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    CHECKOUT
+                </button>
+            </div>
+        </nav>
+
+        <div class="classes-container">
+            <div v-for="item in classes" class="class-card">
+                <img :src="getClassImage(item)" :alt="item">
+                <h3>{{item}}</h3>
+            </div>
+        </div>
     </div>
+
     <script>
         let website = new Vue({
             el: '#app',
@@ -28,6 +189,12 @@
                     'Biology',
                     'Chemistry'                    
                 ]
+            },
+            methods: {
+                getClassImage(subject) {
+                    // You would need to implement this to return appropriate images
+                    return 'path-to-subject-image.jpg'
+                }
             }
         })
     </script>
