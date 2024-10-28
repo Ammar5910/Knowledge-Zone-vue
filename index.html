@@ -1,10 +1,35 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <metaviewport" 'nt="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+
+    <title>Knowledge Zone</title>
 </head>
 <body>
-    
+    <div id="app">
+        <h1>Knowledge Zone</h1>
+        <p v-for="item in classes" v-text="item"></p>
+    </div>
+    <script>
+        let website = new Vue({
+            el: '#app',
+            data: {
+                classes: [
+                    'Math',
+                    'Science',
+                    'English',
+                    'History',
+                    'Geography',
+                    'Business',
+                    'Economics',
+                    'Computer',
+                    'Biology',
+                    'Chemistry'                    
+                ]
+            }
+        })
+    </script>
 </body>
 </html>
