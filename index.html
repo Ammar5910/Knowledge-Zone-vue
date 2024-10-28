@@ -5,22 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Knowledge Zone</title>
+
     <style>
+        /* Global Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: Arial, sans-serif;
         }
 
+        /* Navbar Styles */
         .nav-top {
-            background-color: #c41e3a; /* Dark red color from image */
+            background-color: #c41e3a;
             padding: 0.5rem;
         }
-
         .nav-main {
             background-color: #333;
             padding: 0.8rem;
@@ -28,24 +30,20 @@
             align-items: center;
             gap: 1rem;
         }
-
         .logo {
             color: white;
             font-size: 1.5rem;
             padding: 0 1rem;
         }
-
         .logo i {
             color: #4CAF50;
         }
-
         .nav-items {
             display: flex;
             align-items: center;
             gap: 1.5rem;
             flex-grow: 1;
         }
-
         .nav-link {
             color: white;
             text-decoration: none;
@@ -53,24 +51,27 @@
             position: relative;
             cursor: pointer;
         }
-
         .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 200px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            padding: 1rem;
-            z-index: 1;
-            border-radius: 4px;
-            color: #333;
-            top: 100%;
-            margin-top: 0.5rem;
-        }
+    display: none;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
+    backdrop-filter: blur(10px); /* Blur effect */
+    min-width: 200px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Soft shadow */
+    padding: 1rem;
+    z-index: 1;
+    border-radius: 8px; /* Rounded corners */
+    color: #333;
+    top: 100%;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    transition: opacity 0.3s ease;
+}
 
-        .nav-link:hover .dropdown-content {
-            display: block;
-        }
+.nav-link:hover .dropdown-content {
+    display: block;
+    opacity: 1;
+}
 
         .search-bar {
             flex-grow: 1;
@@ -81,7 +82,6 @@
             width: 100%;
             max-width: 500px;
         }
-
         .nav-button {
             background: none;
             border: none;
@@ -93,45 +93,78 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .checkout-btn {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-
         .checkout-btn i {
             font-size: 1.2rem;
         }
 
+        /* Classes Container Styles */
         .classes-container {
             padding: 2rem;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 2rem;
         }
-
         .class-card {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 1rem;
+            padding: 1.5rem;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
         }
-
         .class-card img {
             width: 100%;
             max-width: 150px;
+            margin-bottom: 0.5rem;
+        }
+        .class-card h3 {
+            margin-bottom: 0.5rem;
+        }
+        .rating {
+            color: #FFD700;
+            font-size: 1rem;
+        }
+        .price {
+            font-size: 1rem;
+            color: #c41e3a;
+            font-weight: bold;
+        }
+        .availability {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .location {
+            font-size: 0.9rem;
+            color: #333;
             margin-bottom: 1rem;
         }
+        .add-to-cart-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        .add-to-cart-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
     </style>
-    <title>Knowledge Zone</title>
 </head>
 <body>
     <div id="app">
-        <nav class="nav-top">
-            <!-- Top red bar -->
-        </nav>
+        <nav class="nav-top"></nav>
         <nav class="nav-main">
             <div class="logo">
                 <i class="fas fa-graduation-cap"></i>
@@ -160,43 +193,58 @@
                 </button>
                 <button class="nav-button checkout-btn">
                     <i class="fas fa-shopping-cart"></i>
+                    <span>{{ cartCount }}</span>
                     CHECKOUT
                 </button>
             </div>
         </nav>
 
         <div class="classes-container">
-            <div v-for="item in classes" class="class-card">
-                <img :src="getClassImage(item)" :alt="item">
-                <h3>{{item}}</h3>
+            <div v-for="classItem in classes" :key="classItem.name" class="class-card">
+                <img :src="getClassImage(classItem.name)" :alt="classItem.name">
+                <h3>{{ classItem.name }}</h3>
+                <div class="rating">
+                    <i class="fas fa-star" v-for="star in 5" :key="star"></i>
+                </div>
+                <div class="price">${{ classItem.price }}</div>
+                <div class="availability">
+                    Seats Available: {{ classItem.seats }}
+                </div>
+                <div class="location">
+                    Location: {{ classItem.location }}
+                </div>
+                <button class="add-to-cart-btn" :disabled="classItem.seats === 0" @click="addToCart(classItem)">
+                    {{ classItem.seats === 0 ? 'Out of Stock' : 'Add to Cart' }}
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        let website = new Vue({
+        new Vue({
             el: '#app',
             data: {
+                cartCount: 0,
                 classes: [
-                    'Math',
-                    'Science',
-                    'English',
-                    'History',
-                    'Geography',
-                    'Business',
-                    'Economics',
-                    'Computer',
-                    'Biology',
-                    'Chemistry'                    
+                    { name: 'Math', price: 100, seats: 5, location: 'Building A' },
+                    { name: 'Science', price: 120, seats: 2, location: 'Building B' },
+                    { name: 'English', price: 90, seats: 3, location: 'Building C' },
+                    { name: 'History', price: 110, seats: 1, location: 'Building D' }, // Example out of stock
+                    { name: 'Geography', price: 105, seats: 4, location: 'Building E' }
                 ]
             },
             methods: {
-                getClassImage(subject) {
-                    // You would need to implement this to return appropriate images
-                    return 'path-to-subject-image.jpg'
+                getClassImage(name) {
+                    return `images/${name.toLowerCase()}.jpg`; // Adjust based on your image paths
+                },
+                addToCart(classItem) {
+                    if (classItem.seats > 0) {
+                        this.cartCount++;
+                        classItem.seats--;
+                    }
                 }
             }
-        })
+        });
     </script>
 </body>
 </html>
