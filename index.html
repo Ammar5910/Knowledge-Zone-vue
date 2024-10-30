@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/classes.js"></script>
     <title>Knowledge Zone</title>
 
     <style>
@@ -52,27 +53,21 @@
             cursor: pointer;
         }
         .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
-    backdrop-filter: blur(10px); /* Blur effect */
-    min-width: 200px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Soft shadow */
-    padding: 1rem;
-    z-index: 1;
-    border-radius: 8px; /* Rounded corners */
-    color: #333;
-    top: 100%;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    transition: opacity 0.3s ease;
-}
-
-.nav-link:hover .dropdown-content {
-    display: block;
-    opacity: 1;
-}
-
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 1rem;
+            z-index: 1;
+            border-radius: 4px;
+            color: #333;
+            top: 100%;
+            margin-top: 0.5rem;
+        }
+        .nav-link:hover .dropdown-content {
+            display: block;
+        }
         .search-bar {
             flex-grow: 1;
             padding: 0.5rem;
@@ -220,18 +215,14 @@
         </div>
     </div>
 
+    
+
     <script>
         new Vue({
             el: '#app',
             data: {
                 cartCount: 0,
-                classes: [
-                    { name: 'Math', price: 100, seats: 5, location: 'Building A' },
-                    { name: 'Science', price: 120, seats: 2, location: 'Building B' },
-                    { name: 'English', price: 90, seats: 3, location: 'Building C' },
-                    { name: 'History', price: 110, seats: 1, location: 'Building D' }, // Example out of stock
-                    { name: 'Geography', price: 105, seats: 4, location: 'Building E' }
-                ]
+                classes: classes
             },
             methods: {
                 getClassImage(name) {
