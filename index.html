@@ -194,25 +194,22 @@
             </div>
         </nav>
 
-        <div class="classes-container">
-            <div v-for="classItem in classes" :key="classItem.name" class="class-card">
-                <img :src="getClassImage(classItem.name)" :alt="classItem.name">
-                <h3>{{ classItem.name }}</h3>
-                <div class="rating">
-                    <i class="fas fa-star" v-for="star in 5" :key="star"></i>
+              <!-- Classes display section -->
+              <div v-if="showClasses" class="classes-container">
+                <div v-for="classItem in filteredClasses" :key="classItem.name" class="class-card">
+                    <img :src="getClassImage(classItem.name)" :alt="classItem.name">
+                    <h3>{{ classItem.name }}</h3>
+                    <div class="rating">
+                        <i class="fas fa-star" v-for="star in 5" :key="star"></i>
+                    </div>
+                    <div class="price">${{ classItem.price }}</div>
+                    <div class="availability">Seats Available: {{ classItem.seats }}</div>
+                    <div class="location">Location: {{ classItem.location }}</div>
+                    <button class="add-to-cart-btn" :disabled="classItem.seats === 0" @click="addToCart(classItem)">
+                        {{ classItem.seats === 0 ? 'Out of Stock' : 'Add to Cart' }}
+                    </button>
                 </div>
-                <div class="price">${{ classItem.price }}</div>
-                <div class="availability">
-                    Seats Available: {{ classItem.seats }}
-                </div>
-                <div class="location">
-                    Location: {{ classItem.location }}
-                </div>
-                <button class="add-to-cart-btn" :disabled="classItem.seats === 0" @click="addToCart(classItem)">
-                    {{ classItem.seats === 0 ? 'Out of Stock' : 'Add to Cart' }}
-                </button>
             </div>
-        </div>
     </div>
 
     
