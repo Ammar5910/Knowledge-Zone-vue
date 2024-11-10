@@ -3,51 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Link to external CSS file -->
     <link rel="stylesheet" href="style.css">
-    <!-- Import Vue.js library -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-    <!-- Import Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="javascript/classes.js"></script>
     <title>Knowledge Zone</title>
 </head>
 <body>
     <div id="app">
-        <!-- Top navigation bar -->
         <nav class="nav-top"></nav>
         
-        <!-- Main navigation bar with logo, links, search bar, and buttons -->
         <nav class="nav-main">
             <div class="logo">
                 <i class="fas fa-graduation-cap"></i>
             </div>
             <div class="nav-items">
-                <!-- INFO dropdown link -->
-                <div class="nav-link">
-                    INFO
+                <div class="nav-link">INFO
                     <div class="dropdown-content">
                         <p>About Knowledge Zone</p>
                         <p>Our Services</p>
                         <p>Learning Resources</p>
                     </div>
                 </div>
-                <!-- CONTACT dropdown link -->
-                <div class="nav-link">
-                    CONTACT
+                <div class="nav-link">CONTACT
                     <div class="dropdown-content">
                         <p>Email: contact@knowledgezone.com</p>
                         <p>Phone: (123) 456-7890</p>
                         <p>Location: Education Center</p>
                     </div>
                 </div>
-                <!-- Search bar for classes -->
                 <input type="text" class="search-bar" placeholder="Search for classes..." v-model="searchQuery">
-                <!-- Sort button -->
-                <button class="nav-button">
+                <button class="nav-button" @click="toggleSort">
                     <i class="fas fa-sort"></i> SORT
                 </button>
-                <!-- Checkout button with cart count -->
                 <button v-on:click="switchSection" class="nav-button checkout-btn">
                     <i class="fas fa-shopping-cart"></i>
                     <span>{{ totalCartItemCount }}</span>
@@ -55,10 +43,22 @@
                 </button>
             </div>
         </nav>
+        
+        <div v-if="showSortOptions" class="sort-options">
+            <select v-model="sortBy">
+                <option value="name">Title</option>
+                <option value="availability">Availability</option>
+                <option value="price">Price</option>
+                <option value="location">Location</option>
+            </select>
+            <select v-model="sortOrder">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+        </div>
 
-        <!-- Classes display section -->
         <div v-if="showClasses" class="classes-container">
-            <div v-for="classItem in filteredClasses" :key="classItem.name" class="class-card">
+            <div v-for="classItem in sortedAndFilteredClasses" :key="classItem.name" class="class-card">
                 <img :src="getClassImage(classItem.name)" :alt="classItem.name">
                 <h3>{{ classItem.name }}</h3>
                 <div class="rating">
@@ -73,7 +73,6 @@
             </div>
         </div>
 
-        <!-- Cart display section -->
         <div v-else-if="showCart" class="checkout-container">
             <div class="cart-container">
                 <h3>Cart:</h3>
@@ -94,10 +93,8 @@
             </div>
         </div>
 
-        <!-- Checkout form section -->
         <div v-else-if="showForm" class="checkout-container">
             <span class="container">
-                <!-- Checkout Form -->
                 <div class="form">
                     <input v-model.trim="order.firstName" type="text" class="form-field" placeholder="First Name">
                     <input v-model.trim="order.lastName" type="text" class="form-field" placeholder="Last Name">
@@ -128,7 +125,6 @@
                     <button v-on:click="backToCheckout" class="order-btn">Go Back to Checkout</button>
                     <button v-on:click="placeOrder" class="order-btn">Place Order</button>
                 </div>
-                <!-- Checkout Overview -->
                 <div class="overview" ref="overviewRef">
                     <div class="logo overview-head">
                         <i class="fas fa-graduation-cap"></i>
@@ -147,7 +143,6 @@
                     <p class="overview-field">Method: {{order.method}}</p>
                 </div>
             </span>
-            <!-- Expanded Overview -->
             <div v-if="showExpandedOverview" class="expandedOverview">
                 <div class="logo overview-head">
                     <i class="fas fa-graduation-cap"></i>
@@ -168,21 +163,23 @@
         </div>
     </div>
 
-    <!-- Vue.js script -->
     <script>
         new Vue({
             el: '#app',
             data: {
-                showClasses: true,  // Show classes section by default
-                showCart: false,     // Cart section hidden by default
-                showForm: false,     // Form section hidden by default
-                showExpandedOverview: false, // Expanded overview hidden by default
+                showClasses: true,
+                showCart: false,
+                showForm: false,
+                showExpandedOverview: false,
+                showSortOptions: false,
+                sortBy: 'name',
+                sortOrder: 'asc',
                 classes: classes,
-                cart: [],             // Cart array for items added
-                totalCartItemCount: 0, // Total number of items in the cart
-                totalCartValue: 0,     // Total value of the cart items
-                searchQuery: '',       // Search query for filtering classes
-                order: {               // Order details object
+                cart: [],
+                totalCartItemCount: 0,
+                totalCartValue: 0,
+                searchQuery: '',
+                order: {
                     firstName: '',
                     lastName: '',
                     email: '',
@@ -191,12 +188,12 @@
                     city: '',
                     state: '',
                     zip: '',
-                    tc: 'I do not accept the terms', // Terms condition acceptance
+                    tc: 'I do not accept the terms',
                     accept: 'I accept the terms',
                     decline: 'I do not accept the terms',
-                    method: '', // Preferred communication method
+                    method: '',
                 },
-                states: {              // List of states for selection in form
+                states: {
                     AL: "Alabama",
                     AR: "Arizona",
                     CA: "California",
@@ -204,17 +201,42 @@
                 }
             },
             computed: {
-                // Filter classes based on search query
                 filteredClasses() {
-                    return this.classes.filter(classItem => classItem.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+                    return this.classes.filter(classItem =>
+                        classItem.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                    );
+                },
+                sortedAndFilteredClasses() {
+                    return [...this.filteredClasses].sort((a, b) => {
+                        let comparison = 0;
+                        if (a[this.sortBy] < b[this.sortBy]) comparison = -1;
+                        if (a[this.sortBy] > b[this.sortBy]) comparison = 1;
+                        return this.sortOrder === 'asc' ? comparison : -comparison;
+                    });
                 }
             },
             methods: {
-                // Get image path based on class name
+                toggleSort() {
+                    this.showSortOptions = !this.showSortOptions;
+                },
                 getClassImage(name) {
                     return `images/${name.toLowerCase()}.png`;
                 },
-
+                addToCart(classItem) {
+                    // Implement add to cart functionality
+                },
+                switchSection() {
+                    this.showClasses = !this.showClasses;
+                    this.showCart = !this.showCart;
+                },
+                proceedToCheckout() {
+                    this.showCart = false;
+                    this.showForm = true;
+                },
+                backToCheckout() {
+                    this.showForm = false;
+                    this.showCart = true;
+                }
             }
         });
     </script>
