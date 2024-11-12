@@ -57,7 +57,7 @@
             </select>
         </div>
 
-        <div v-if="showClasses" class="classes-container">
+   <div v-if="showClasses" class="classes-container">
             <div v-for="classItem in sortedAndFilteredClasses" :key="classItem.name" class="class-card">
                 <img :src="getClassImage(classItem.name)" :alt="classItem.name">
                 <h3>{{ classItem.name }}</h3>
@@ -67,8 +67,8 @@
                 <div class="price">${{ classItem.price }}</div>
                 <div class="availability">Seats Available: {{ classItem.seats }}</div>
                 <div class="location">Location: {{ classItem.location }}</div>
-                <button class="add-to-cart-btn" :disabled="classItem.seats === 0" @click="addToCart(classItem)">
-                    {{ classItem.seats === 0 ? 'Out of Stock' : 'Add to Cart' }}
+                <button class="add-to-cart-btn" :disabled="classItem.seats === 0 || cart.length > 0 && !canAddToCart(classItem)" @click="addToCart(classItem)">
+                    {{ classItem.seats === 0 ? 'Out of Stock' : cart.length > 0 && !canAddToCart(classItem) ? 'Cart is Full' : 'Add to Cart' }}
                 </button>
             </div>
         </div>
@@ -89,79 +89,9 @@
                     </li>
                 </ul>
                 <p class="totalValue"><strong>Total Value:</strong> {{ totalCartValue }} AED</p>
-                <button v-on:click="proceedToCheckout">Proceed to Checkout</button>
+                <button v-on:click="" :disabled="cart.length === 0">Proceed to Checkout</button>
             </div>
         </div>
-
-        <div v-else-if="showForm" class="checkout-container">
-            <span class="container">
-                <div class="form">
-                    <input v-model.trim="order.firstName" type="text" class="form-field" placeholder="First Name">
-                    <input v-model.trim="order.lastName" type="text" class="form-field" placeholder="Last Name">
-                    <input v-model.trim="order.email" type="email" class="form-field" placeholder="Email">
-                    <input v-model.trim="order.tel" type="tel" class="form-field" placeholder="Phone Number">
-                    <input v-model.trim="order.address" type="text" class="form-field" placeholder="Address">
-                    <input v-model.trim="order.city" type="text" class="form-field" placeholder="City">
-                    <select v-model="order.state" class="form-field">
-                        <option disabled value="">State</option>
-                        <option v-for="(state, key) in states" v-bind:value="state">
-                            {{ key }}
-                        </option>
-                    </select>
-                    <input v-model.trim="order.zip" type="text" class="form-field" placeholder="Zip Code">
-                    <span class="form-field-container">
-                        <input v-model.trim="order.tc" type="checkbox" value="false"
-                                v-bind:true-value="order.accept"
-                                v-bind:false-value="order.decline">
-                        <label for="promotion">Terms & Conditions</label>
-                    </span>
-                    <span class="form-field-container">
-                        <label>Choose a way for communication:</label><br>
-                        <input v-model="order.method" type="radio" value="email">
-                        <label for="home">Email</label>
-                        <input v-model="order.method" type="radio" value="phone">
-                        <label for="business">Phone</label>
-                    </span>
-                    <button v-on:click="backToCheckout" class="order-btn">Go Back to Checkout</button>
-                    <button v-on:click="placeOrder" class="order-btn">Place Order</button>
-                </div>
-                <div class="overview" ref="overviewRef">
-                    <div class="logo overview-head">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <p class="overview-head">Bill Overview</p>
-                    <button v-on:click="expandOverview" class="expand-btn"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
-                    <hr class="overview-line">
-                    <p class="overview-field">Name: {{order.firstName}} {{order.lastName}}</p>
-                    <p class="overview-field">Email: {{order.email}}</p>
-                    <p class="overview-field">Tel: {{order.tel}}</p>
-                    <p class="overview-field">Address: {{order.address}}</p>
-                    <p class="overview-field">City: {{order.city}}</p>
-                    <p class="overview-field">State: {{order.state}}</p>
-                    <p class="overview-field">Zip: {{order.zip}}</p>
-                    <p class="overview-field">Terms: {{order.tc}}</p>
-                    <p class="overview-field">Method: {{order.method}}</p>
-                </div>
-            </span>
-            <div v-if="showExpandedOverview" class="expandedOverview">
-                <div class="logo overview-head">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <p class="overview-head">Bill Overview</p>
-                <button v-on:click="expandOverview" class="expand-btn"><i class="fa-solid fa-down-left-and-up-right-to-center"></i></button>
-                <hr class="overview-line">
-                <p class="overview-field">Name: {{order.firstName}} {{order.lastName}}</p>
-                <p class="overview-field">Email: {{order.email}}</p>
-                <p class="overview-field">Tel: {{order.tel}}</p>
-                <p class="overview-field">Address: {{order.address}}</p>
-                <p class="overview-field">City: {{order.city}}</p>
-                <p class="overview-field">State: {{order.state}}</p>
-                <p class="overview-field">Zip: {{order.zip}}</p>
-                <p class="overview-field">Terms: {{order.tc}}</p>
-                <p class="overview-field">Method: {{order.method}}</p>
-            </div>
-        </div>
-    </div>
 
     <script>
         new Vue({
@@ -188,7 +118,7 @@
                     city: '',
                     state: '',
                     zip: '',
-                    tc: 'I do not accept the terms',
+                    tc: 'decline',
                     accept: 'I accept the terms',
                     decline: 'I do not accept the terms',
                     method: '',
@@ -223,19 +153,84 @@
                     return `images/${name.toLowerCase()}.png`;
                 },
                 addToCart(classItem) {
-                    // Implement add to cart functionality
+                    if (this.cart.length === 0 || this.canAddToCart(classItem)) {
+                        const cartItem = this.cart.find(item => item.name === classItem.name);
+                        if (cartItem) {
+                            cartItem.count++;
+                        } else {
+                            this.cart.push({ ...classItem, count: 1 });
+                        }
+                        classItem.seats--;
+                        this.updateCartTotals();
+                    } else {
+                        alert("Your cart is full. Please remove an item before adding a new one.");
+                    }
+                },
+                canAddToCart(classItem) {
+                    return this.cart.length < 3 || this.cart.some(item => item.name === classItem.name);
+                },
+                increaseQuantity(item) {
+                    const classInClasses = this.classes.find(classItem => classItem.name === item.name);
+                    if (classInClasses && classInClasses.seats > 0) {
+                        item.count++;
+                        classInClasses.seats--;
+                        this.updateCartTotals();
+                    }
+                },
+                decreaseQuantity(item) {
+                    const classInClasses = this.classes.find(classItem => classItem.name === item.name);
+                    if (item.count > 1) {
+                        item.count--;
+                        classInClasses.seats++;
+                        this.updateCartTotals();
+                    } else {
+                        this.removeFromCart(item);
+                    }
+                },
+                removeFromCart(item) {
+                    const index = this.cart.indexOf(item);
+                    if (index > -1) {
+                        const classInClasses = this.classes.find(classItem => classItem.name === item.name);
+                        classInClasses.seats += item.count;
+                        this.cart.splice(index, 1);
+                        this.updateCartTotals();
+                    }
+                },
+                updateCartTotals() {
+                    this.totalCartItemCount = this.cart.reduce((total, item) => total + item.count, 0);
+                    this.totalCartValue = this.cart.reduce((total, item) => total + item.count * item.price, 0);
                 },
                 switchSection() {
                     this.showClasses = !this.showClasses;
                     this.showCart = !this.showCart;
+                    this.showForm = false;
                 },
                 proceedToCheckout() {
+                    this.showClasses = false;
                     this.showCart = false;
                     this.showForm = true;
                 },
-                backToCheckout() {
+                submitOrder() {
+                    // Handle form submission and order placement logic here
+                    console.log("Order submitted:", this.order);
+                    this.resetForm();
+                    this.showClasses = true;
+                    this.showCart = false;
                     this.showForm = false;
-                    this.showCart = true;
+                },
+                resetForm() {
+                    this.order.firstName = '';
+                    this.order.lastName = '';
+                    this.order.email = '';
+                    this.order.tel = '';
+                    this.order.address = '';
+                    this.order.city = '';
+                    this.order.state = '';
+                    this.order.zip = '';
+                    this.order.tc = 'decline';
+                    this.order.method = '';
+                    this.cart = [];
+                    this.updateCartTotals();
                 }
             }
         });
