@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to external CSS and Font Awesome for icons -->
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Link to Vue.js library and external JavaScript file -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
     <script src="javascript/classes.js"></script>
     <title>Knowledge Zone</title>
 </head>
 <body>
     <div id="app">
+        <!-- Top Navigation -->
         <nav class="nav-top"></nav>
         
+        <!-- Main Navigation Bar -->
         <nav class="nav-main">
             <div class="logo">
-                <i class="fas fa-graduation-cap"></i>
+                <i class="fas fa-graduation-cap"></i> Knowledge Zone
             </div>
             <div class="nav-items">
+                <!-- INFO Dropdown Menu -->
                 <div class="nav-link">INFO
                     <div class="dropdown-content">
                         <p>About Knowledge Zone</p>
@@ -25,6 +30,7 @@
                         <p>Learning Resources</p>
                     </div>
                 </div>
+                <!-- CONTACT Dropdown Menu -->
                 <div class="nav-link">CONTACT
                     <div class="dropdown-content">
                         <p>Email: contact@knowledgezone.com</p>
@@ -32,19 +38,25 @@
                         <p>Location: Education Center</p>
                     </div>
                 </div>
+                <!-- Search bar for classes -->
                 <input type="text" class="search-bar" placeholder="Search for classes..." v-model="searchQuery">
-                <button class="nav-button" @click="toggleSort">
+                <!-- Sort Button (only shows when classes are visible) -->
+                <button class="nav-button" v-if="showClasses" @click="toggleSort">
                     <i class="fas fa-sort"></i> SORT
                 </button>
-                <button v-on:click="switchSection" class="nav-button checkout-btn">
+                <!-- Checkout Button showing total items in the cart (disabled on checkout page) -->
+                <button class="nav-button checkout-btn" @click="switchToCheckout" :disabled="showCheckout">
                     <i class="fas fa-shopping-cart"></i>
-                    <span>{{ totalCartItemCount }}</span>
-                    CHECKOUT
+                    <span>{{ totalCartItemCount }}</span> CHECKOUT
+                </button>
+                <!-- Home Button (only shows on the checkout page) -->
+                <button class="nav-button home-btn" v-if="showCheckout" @click="goHome">
+                    <i class="fas fa-home"></i> HOME
                 </button>
             </div>
         </nav>
         
-        <div v-if="showSortOptions" class="sort-options">
+        <div v-if="showSortOptions && showClasses" class="sort-options">
             <select v-model="sortBy">
                 <option value="name">Title</option>
                 <option value="availability">Availability</option>
@@ -57,7 +69,8 @@
             </select>
         </div>
 
-   <div v-if="showClasses" class="classes-container">
+        <!-- Classes List Container (Main Page) -->
+        <div v-if="showClasses" class="classes-container">
             <div v-for="classItem in sortedAndFilteredClasses" :key="classItem.name" class="class-card">
                 <img :src="getClassImage(classItem.name)" :alt="classItem.name">
                 <h3>{{ classItem.name }}</h3>
@@ -67,93 +80,86 @@
                 <div class="price">${{ classItem.price }}</div>
                 <div class="availability">Seats Available: {{ classItem.seats }}</div>
                 <div class="location">Location: {{ classItem.location }}</div>
-                <button class="add-to-cart-btn" :disabled="classItem.seats === 0 || cart.length > 0 && !canAddToCart(classItem)" @click="addToCart(classItem)">
-                    {{ classItem.seats === 0 ? 'Out of Stock' : cart.length > 0 && !canAddToCart(classItem) ? 'Cart is Full' : 'Add to Cart' }}
+                <button v-if="classItem.seats > 0" class="add-to-cart-btn" @click="addToCart(classItem)">
+                    Add to Cart
+                </button>
+                <button v-else class="add-to-cart-btn" disabled>
+                    Out of Stock
                 </button>
             </div>
         </div>
-
-        <div v-else-if="showCart" class="checkout-container">
-            <div class="cart-container">
+        
+        <!-- Cart and Checkout Section (Checkout Page) -->
+        <div v-if="showCheckout" class="checkout-container">
+            <div v-if="showCart" class="cart-section">
                 <h3>Cart:</h3>
-                <ul>
-                    <li v-for="item in cart" :key="item.name">
-                        <img :src="getClassImage(item.name)" alt="subject image">
-                        <div class="subjectInfo">{{ item.name }} <strong>x{{ item.count }}</strong></div>
-                        <div>{{ item.count * item.price }} AED</div>
-                        <div class="quantityControl">
-                            <button @click="decreaseQuantity(item)">-</button>
-                            <button @click="increaseQuantity(item)">+</button>
-                            <button @click="removeFromCart(item)">Remove</button>
-                        </div>
-                    </li>
-                </ul>
+                <div class="cart-container">
+                    <ul>
+                        <li v-for="item in cart" :key="item.name">
+                            <img :src="getClassImage(item.name)" alt="subject image">
+                            <div class="subjectInfo">{{ item.name }} <strong>x{{ item.count }}</strong></div>
+                            <p>{{ item.count * item.price }} AED</p>
+                            <div class="quantityControl">
+                                <button @click="decreaseQuantity(item)">-</button>
+                                <button @click="increaseQuantity(item)">+</button>
+                                <button @click="removeFromCart(item)">Remove</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
                 <p class="totalValue"><strong>Total Value:</strong> {{ totalCartValue }} AED</p>
-                <button v-on:click="" :disabled="cart.length === 0">Proceed to Checkout</button>
+                <button @click="proceedToCheckout" :disabled="cart.length === 0">Proceed to Checkout</button>
             </div>
         </div>
 
-    <script>
-        new Vue({
-            el: '#app',
-            data: {
-                showClasses: true,
-                showCart: false,
-                showForm: false,
-                showExpandedOverview: false,
-                showSortOptions: false,
-                sortBy: 'name',
-                sortOrder: 'asc',
-                classes: classes,
-                cart: [],
-                totalCartItemCount: 0,
-                totalCartValue: 0,
-                searchQuery: '',
-                order: {
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    tel: '',
-                    address: '',
-                    city: '',
-                    state: '',
-                    zip: '',
-                    tc: 'decline',
-                    accept: 'I accept the terms',
-                    decline: 'I do not accept the terms',
-                    method: '',
+        <script>
+            new Vue({
+                el: '#app',
+                data: {
+                    showClasses: true,
+                    showCheckout: false,
+                    showCart: false,
+                    showSortOptions: false,
+                    sortBy: 'name',
+                    sortOrder: 'asc',
+                    classes: classes,
+                    cart: [],
+                    totalCartItemCount: 0,
+                    totalCartValue: 0,
+                    searchQuery: '',
+                    order: {
+                        firstName: '',
+                        lastName: '',
+                        address: '',
+                        contact: '',
+                        email: '',
+                        paymentMethod: '',
+                    },
+                    originalClasses: JSON.parse(JSON.stringify(classes)), // Save the initial state of classes
                 },
-                states: {
-                    AL: "Alabama",
-                    AR: "Arizona",
-                    CA: "California",
-                    NV: "Nevada"
-                }
-            },
-            computed: {
-                filteredClasses() {
-                    return this.classes.filter(classItem =>
-                        classItem.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-                    );
+                computed: {
+                    filteredClasses() {
+                        return this.classes.filter(classItem =>
+                            classItem.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                        );
+                    },
+                    sortedAndFilteredClasses() {
+                        return [...this.filteredClasses].sort((a, b) => {
+                            let comparison = 0;
+                            if (a[this.sortBy] < b[this.sortBy]) comparison = -1;
+                            if (a[this.sortBy] > b[this.sortBy]) comparison = 1;
+                            return this.sortOrder === 'asc' ? comparison : -comparison;
+                        });
+                    }
                 },
-                sortedAndFilteredClasses() {
-                    return [...this.filteredClasses].sort((a, b) => {
-                        let comparison = 0;
-                        if (a[this.sortBy] < b[this.sortBy]) comparison = -1;
-                        if (a[this.sortBy] > b[this.sortBy]) comparison = 1;
-                        return this.sortOrder === 'asc' ? comparison : -comparison;
-                    });
-                }
-            },
-            methods: {
-                toggleSort() {
-                    this.showSortOptions = !this.showSortOptions;
-                },
-                getClassImage(name) {
-                    return `images/${name.toLowerCase()}.png`;
-                },
-                addToCart(classItem) {
-                    if (this.cart.length === 0 || this.canAddToCart(classItem)) {
+                methods: {
+                    toggleSort() {
+                        this.showSortOptions = !this.showSortOptions;
+                    },
+                    getClassImage(name) {
+                        return `images/${name.toLowerCase()}.png`;
+                    },
+                    addToCart(classItem) {
                         const cartItem = this.cart.find(item => item.name === classItem.name);
                         if (cartItem) {
                             cartItem.count++;
@@ -162,78 +168,62 @@
                         }
                         classItem.seats--;
                         this.updateCartTotals();
-                    } else {
-                        alert("Your cart is full. Please remove an item before adding a new one.");
-                    }
-                },
-                canAddToCart(classItem) {
-                    return this.cart.length < 3 || this.cart.some(item => item.name === classItem.name);
-                },
-                increaseQuantity(item) {
-                    const classInClasses = this.classes.find(classItem => classItem.name === item.name);
-                    if (classInClasses && classInClasses.seats > 0) {
-                        item.count++;
-                        classInClasses.seats--;
-                        this.updateCartTotals();
-                    }
-                },
-                decreaseQuantity(item) {
-                    const classInClasses = this.classes.find(classItem => classItem.name === item.name);
-                    if (item.count > 1) {
-                        item.count--;
-                        classInClasses.seats++;
-                        this.updateCartTotals();
-                    } else {
-                        this.removeFromCart(item);
-                    }
-                },
-                removeFromCart(item) {
-                    const index = this.cart.indexOf(item);
-                    if (index > -1) {
+                    },
+                    increaseQuantity(item) {
                         const classInClasses = this.classes.find(classItem => classItem.name === item.name);
-                        classInClasses.seats += item.count;
-                        this.cart.splice(index, 1);
+                        if (classInClasses && classInClasses.seats > 0) {
+                            item.count++;
+                            classInClasses.seats--;
+                            this.updateCartTotals();
+                        }
+                    },
+                    decreaseQuantity(item) {
+                        const classInClasses = this.classes.find(classItem => classItem.name === item.name);
+                        if (item.count > 1) {
+                            item.count--;
+                            classInClasses.seats++;
+                            this.updateCartTotals();
+                        } else {
+                            this.removeFromCart(item);
+                        }
+                    },
+                    removeFromCart(item) {
+                        const index = this.cart.indexOf(item);
+                        if (index > -1) {
+                            const classInClasses = this.classes.find(classItem => classItem.name === item.name);
+                            classInClasses.seats += item.count;
+                            this.cart.splice(index, 1);
+                            this.updateCartTotals();
+                        }
+                    },
+                    updateCartTotals() {
+                        this.totalCartItemCount = this.cart.reduce((total, item) => total + item.count, 0);
+                        this.totalCartValue = this.cart.reduce((total, item) => total + item.count * item.price, 0);
+                    },
+                    switchToCheckout() {
+                        if (!this.showCheckout) {
+                            this.showClasses = false;
+                            this.showCheckout = true;
+                            this.showCart = true;
+                        }
+                    },
+                    goHome() {
+                        this.showCheckout = false;
+                        this.showClasses = true;
+                        this.showCart = false;
+                    },
+                    proceedToCheckout() {
+                        // Implement checkout logic here
+                        alert("Proceeding to checkout...");
+                    },
+                    resetCartAndClasses() {
+                        this.cart = [];
+                        this.classes = JSON.parse(JSON.stringify(this.originalClasses));
                         this.updateCartTotals();
                     }
-                },
-                updateCartTotals() {
-                    this.totalCartItemCount = this.cart.reduce((total, item) => total + item.count, 0);
-                    this.totalCartValue = this.cart.reduce((total, item) => total + item.count * item.price, 0);
-                },
-                switchSection() {
-                    this.showClasses = !this.showClasses;
-                    this.showCart = !this.showCart;
-                    this.showForm = false;
-                },
-                proceedToCheckout() {
-                    this.showClasses = false;
-                    this.showCart = false;
-                    this.showForm = true;
-                },
-                submitOrder() {
-                    // Handle form submission and order placement logic here
-                    console.log("Order submitted:", this.order);
-                    this.resetForm();
-                    this.showClasses = true;
-                    this.showCart = false;
-                    this.showForm = false;
-                },
-                resetForm() {
-                    this.order.firstName = '';
-                    this.order.lastName = '';
-                    this.order.email = '';
-                    this.order.tel = '';
-                    this.order.address = '';
-                    this.order.city = '';
-                    this.order.state = '';
-                    this.order.zip = '';
-                    this.order.tc = 'decline';
-                    this.order.method = '';
-                    this.cart = [];
-                    this.updateCartTotals();
                 }
-            }
-        });
-    </script>
+            });
+        </script>
+    </div>
 </body>
 </html>
