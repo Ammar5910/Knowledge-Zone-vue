@@ -41,7 +41,8 @@
               <p>Location: Education Center</p>
             </div>
           </div>
-
+                <!-- Search bar for classes -->
+                <input type="text" class="search-bar" placeholder="Search for classes..." v-model="searchQuery">
           <!-- Sort Button (only shows when classes are visible) -->
           <button class="nav-button" v-if="showClasses" @click="toggleSort">
             <i class="fas fa-sort"></i> SORT
@@ -160,7 +161,7 @@
               </div>
   
               <!-- Total Value -->
-              <p class="totalValue"><strong>Total Value:</strong> {{ totalCartValue }} AED</p>
+              <p class="totalValue"><strong>Total Value:</strong> {{ totalValue }} AED</p>
   
               <!-- Payment Method Selection -->
               <div id="payment-method" class="formGroup fullWidth">
@@ -245,6 +246,9 @@
   </div>
 
   <!-- Order Details -->
+   <div class="order-details">
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+   </div>
   <h3>Customer Details</h3>
   <p><strong>First Name:</strong> {{ order.firstName }}</p>
   <p><strong>Last Name:</strong> {{ order.lastName }}</p>
@@ -273,7 +277,7 @@
           classes: classes, // Array of available classes
           cart: [], // Cart to store selected items
           totalCartItemCount: 0, // Total count of items in cart
-          totalCartValue: 0, // Total price of items in cart
+          totalValue: 0, // Total price of items in cart
           searchQuery: "", // Search query for filtering classes
           order: {
             firstName: "",
@@ -411,7 +415,7 @@
               (total, item) => total + item.count,
               0
             );
-            this.totalCartValue = this.cart.reduce(
+            this.totalValue = this.cart.reduce(
               (total, item) => total + item.count * item.price,
               0
             );
