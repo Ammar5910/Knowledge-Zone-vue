@@ -7,6 +7,12 @@
     padding: 0;
     box-sizing: border-box;
 }
+:root {
+    --primary-color: #1b5e20;
+    --primary-light: #a5d6a7;
+    --secondary-color: #4CAF50;
+    --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f2f2f7;
@@ -54,9 +60,9 @@ body {
     font-size: 1rem;
     cursor: pointer;
     position: relative;
-    padding: 0.3rem;
+    padding: 0.5rem;
     font-weight: 500;
-    transition: color 0.3s;
+    transition: color 0.3s ease;
 }
 .nav-link:hover {
     color: #a5d6a7;
@@ -65,14 +71,15 @@ body {
     display: none;
     position: absolute;
     background-color: #e8f5e9;
-    min-width: 180px;
+    min-width: 200px;
     border-radius: 8px;
     padding: 1rem;
     top: 110%;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     color: #333;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    opacity: 0.5;
+    transition: opacity 0.8s ease;
+    z-index: 1001;
 }
 .nav-link:hover .dropdown-content {
     display: block;
@@ -90,10 +97,13 @@ body {
     border: 1px solid #ddd;
     outline: none;
     transition: box-shadow 0.3s;
-    max-width: 500px;
+    transition: all 0.3s ease;
+    width: 250px;
 }
 .search-bar:focus {
+    width: 300px;
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+    border-color: var(--secondary-color);
 }
 .nav-button {
     background: none;
@@ -134,30 +144,43 @@ body {
 /* Classes Container */
 .classes-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
     padding: 2rem;
+    margin: auto;
+    max-width: 1400;
 }
 .class-card {
     background-color: #fff;
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     text-align: center;
-    transition: transform 0.3s;
+    transition: transform 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    position: relative;
+    overflow: hidden;
 }
 .class-card:hover {
-    transform: scale(1.05);
+    /* transform: scale(1.05); */
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
 }
-.class-card img {
+/* .class-card img {
     width: 130px;
     height: 130px;
     border-radius: 50%;
     object-fit: cover;
+} */
+.class-card img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-light);
 }
 .class-card h3 {
     color: #333;
@@ -201,7 +224,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100vw;
+    width: 98.8vw;
     height: calc(100vh - 70px);
     background-color: #f9f9f9;
     position: relative;
@@ -315,3 +338,116 @@ body {
 .backButton:hover {
     background-color: #555;
 }
+
+/*checkout form*/
+.checkoutContainer {
+    width: 50%;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 2.5%;
+}
+
+.checkoutForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.formRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+}
+
+.formGroup.fullWidth {
+    width: 100%;
+}
+
+label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #555;
+}
+
+input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    outline: none;
+    width: 100%;
+}
+
+input:focus {
+    border-color: #0066cc;
+}
+
+.totalValue {
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+
+
+button {
+    padding: 12px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* button:hover {
+    background-color: #0056b3;
+} */
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.placeOrder {
+    background-color: #28a745;
+}
+
+.placeOrder:hover {
+    background-color: #218838;
+}
+
+.backButton {
+    background-color: #dc3545;
+}
+
+.backButton:hover {
+    background-color: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .formRow {
+        flex-direction: column;
+    }
+
+    .formGroup {
+        width: 100%;
+    }
+
+    .checkoutContainer {
+        width: 95%;
+    }
+}
+
