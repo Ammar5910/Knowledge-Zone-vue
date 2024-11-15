@@ -225,7 +225,9 @@ body {
     justify-content: center;
     align-items: center;
     width: 98.8vw;
-    height: calc(100vh - 70px);
+    height: auto;
+    min-height: calc(100vh - 70px);
+
     background-color: #f9f9f9;
     position: relative;
 }
@@ -341,7 +343,7 @@ body {
 
 /*checkout form*/
 .checkoutContainer {
-    width: 50%;
+    width: 80%;
     margin: 0 auto;
     background-color: #fff;
     border-radius: 10px;
@@ -590,3 +592,4 @@ button {
 #radio-section > * {
     width: 50%;
 }
+

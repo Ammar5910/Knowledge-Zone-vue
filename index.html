@@ -15,7 +15,7 @@
     <div id="app">
       <!-- Top Navigation -->
       <nav class="nav-top"></nav>
-
+  
       <!-- Main Navigation Bar -->
       <nav class="nav-main">
         <div class="logo">
@@ -31,6 +31,7 @@
               <p>Learning Resources</p>
             </div>
           </div>
+          
           <!-- CONTACT Dropdown Menu -->
           <div class="nav-link">
             CONTACT
@@ -40,23 +41,25 @@
               <p>Location: Education Center</p>
             </div>
           </div>
-          <!-- Search bar for filtering classes -->
+  
           <!-- Sort Button (only shows when classes are visible) -->
           <button class="nav-button" v-if="showClasses" @click="toggleSort">
             <i class="fas fa-sort"></i> SORT
           </button>
+  
           <!-- Checkout Button showing total items in the cart (disabled on checkout page) -->
           <button class="nav-button checkout-btn" @click="switchToCheckout" :disabled="showCheckout">
             <i class="fas fa-shopping-cart"></i>
             <span>{{ totalCartItemCount }}</span> CHECKOUT
           </button>
+  
           <!-- Home Button (only shows on the checkout page) -->
-          <button class="nav-button home-btn" v-if="showCheckout" @click="goHome" >
+          <button class="nav-button home-btn" v-if="showCheckout" @click="goHome">
             <i class="fas fa-home"></i> HOME
           </button>
         </div>
       </nav>
-
+  
       <!-- Sorting options for classes -->
       <div v-if="showSortOptions && showClasses" class="sort-options">
         <select v-model="sortBy">
@@ -70,31 +73,31 @@
           <option value="desc">Descending</option>
         </select>
       </div>
-
+  
       <!-- Classes List Container (Main Page) -->
       <div v-if="showClasses" class="classes-container">
-        <div
-          v-for="classItem in sortedAndFilteredClasses"
-          :key="classItem.name"
-          class="class-card"
-        >
+        <div v-for="classItem in sortedAndFilteredClasses" :key="classItem.name" class="class-card">
           <!-- Displaying class image, name, and details -->
           <img :src="getClassImage(classItem.name)" :alt="classItem.name" />
           <h3>{{ classItem.name }}</h3>
+          
+          <!-- Class rating -->
           <div class="rating">
             <i class="fas fa-star" v-for="star in 5" :key="star"></i>
           </div>
+          
           <div class="price">${{ classItem.price }}</div>
           <div class="availability">Seats Available: {{ classItem.seats }}</div>
           <div class="location">Location: {{ classItem.location }}</div>
+  
           <!-- Add to Cart Button (disabled if no seats are available) -->
-          <button    v-if="classItem.seats > 0"  class="add-to-cart-btn"  @click="addToCart(classItem)">
+          <button v-if="classItem.seats > 0" class="add-to-cart-btn" @click="addToCart(classItem)">
             Add to Cart
           </button>
           <button v-else class="add-to-cart-btn" disabled>Out of Stock</button>
         </div>
       </div>
-
+  
       <!-- Cart and Checkout Section (Checkout Page) -->
       <div v-if="showCheckout" class="checkout-container">
         <div v-if="showCart" class="cart-section">
@@ -104,9 +107,7 @@
             <ul>
               <li v-for="item in cart" :key="item.name">
                 <img :src="getClassImage(item.name)" alt="subject image" />
-                <div class="subjectInfo">
-                  {{ item.name }} <strong>x{{ item.count }}</strong>
-                </div>
+                <div class="subjectInfo">{{ item.name }} <strong>x{{ item.count }}</strong></div>
                 <p>{{ item.count * item.price }} AED</p>
                 <div class="quantityControl">
                   <!-- Increase/Decrease Quantity, and Remove Item Buttons -->
@@ -117,141 +118,110 @@
               </li>
             </ul>
           </div>
+          
           <!-- Display total value of items in the cart -->
-          <p class="totalValue">
-            <strong>Total Value:</strong> {{ totalCartValue }} AED
-          </p>
+          <p class="totalValue"><strong>Total Value:</strong> {{ totalCartValue }} AED</p>
+          
           <!-- Proceed to Checkout Button -->
           <button @click="proceedToCheckout" :disabled="cart.length === 0">
             Proceed to Checkout
           </button>
         </div>
-      </div>
-
-      <div v-if="showForm">
-        <div class="checkoutContainer">
-          <h3>Checkout Form</h3>
-          <div class="checkoutForm">
-            <!-- Personal Information Form -->
-            <div class="formRow">
-              <div class="formGroup">
-                <label for="firstName">First Name:</label>
-                <input  id="firstName"  v-model="order.firstName"  type="text"  required placeholder="Your Firstname" />
+  
+        <!-- Checkout Form Section -->
+        <div v-if="showForm">
+          <div class="checkoutContainer">
+            <h3>Checkout Form</h3>
+            <div class="checkoutForm">
+              <!-- Personal Information Form -->
+              <div class="formRow">
+                <div class="formGroup">
+                  <label for="firstName">First Name:</label>
+                  <input id="firstName" v-model="order.firstName" type="text" required placeholder="Your Firstname" />
+                </div>
+                <div class="formGroup">
+                  <label for="lastName">Last Name:</label>
+                  <input id="lastName" v-model="order.lastName" type="text" required placeholder="Your Lastname" />
+                </div>
+                <div class="formGroup">
+                  <label for="address">Address:</label>
+                  <input id="address" v-model="order.address" type="text" required placeholder="Your home location" />
+                </div>
               </div>
-              <div class="formGroup">
-                <label for="lastName">Last Name:</label>
-                <input  id="lastName"  v-model="order.lastName"  type="text"  required placeholder="Your lastName"/>
+  
+              <!-- Contact Information -->
+              <div class="formGroup fullWidth">
+                <label for="contact">Contact Number:</label>
+                <input id="contact" v-model="order.contact" type="text" @input="validateContact" required placeholder="+971000000000" />
               </div>
-              <div class="formGroup">
-                <label for="address">Address:</label>
-                <input  id="address"  v-model="order.address"  type="text"  required placeholder="your home location"/>
+              <div class="formGroup fullWidth">
+                <label for="email">Email:</label>
+                <input id="email" v-model="order.email" type="email" required placeholder="yourname@example.com" />
               </div>
-            </div>
-            <!-- Contact Information -->
-            <div class="formGroup fullWidth">
-              <label for="contact">Contact Number:</label>
-              <input id="contact"  v-model="order.contact"  type="text"  @input="validateContact"  required placeholder="+971000000000" />
-            </div>
-            <div class="formGroup fullWidth">
-              <label for="email">Email:</label>
-              <input  id="email"  v-model="order.email"  type="email"  required  placeholder="yourname@example.com"/>
-            </div>
-
-            <p class="totalValue">
-              <strong>Total Value:</strong> {{ totalCartValue }} AED
-            </p>
-            <!-- Payment Method Selection -->
-            <div id="payment-method" class="formGroup fullWidth">
-              <label>Payment Method:</label>
-              <div id="radio-section">
-                <label for="Cash">Cash</label>
-                <input  id="Cash"  type="radio"  v-model="order.paymentMethod"  name="method"  value="Cash"  required/>
-                <label for="Card">Card</label>
-                <input    id="Card"    type="radio"    v-model="order.paymentMethod"    name="method"    value="Card"    required  />
-                <label for="PayPal">PayPal</label>
-                <input    id="PayPal"    type="radio"    v-model="order.paymentMethod"    name="method"    value="PayPal"    required  />
+  
+              <!-- Total Value -->
+              <p class="totalValue"><strong>Total Value:</strong> {{ totalCartValue }} AED</p>
+  
+              <!-- Payment Method Selection -->
+              <div id="payment-method" class="formGroup fullWidth">
+                <label>Payment Method:</label>
+                <div id="radio-section">
+                  <label for="Cash">Cash</label>
+                  <input id="Cash" type="radio" v-model="order.paymentMethod" name="method" value="Cash" required />
+                  <label for="Card">Card</label>
+                  <input id="Card" type="radio" v-model="order.paymentMethod" name="method" value="Card" required />
+                  <label for="PayPal">PayPal</label>
+                  <input id="PayPal" type="radio" v-model="order.paymentMethod" name="method" value="PayPal" required />
+                </div>
               </div>
-            </div>
-
-            <!-- Card Information (shown if "Card" is selected) -->
-            <div v-if="order.paymentMethod === 'Card'" id="card-section">
-              <div id="card-information">
-                <label for="card-number">Card Number</label>
-                <input
-                  id="card-number"
-                  v-model="order.cardNumber"
-                  type="text"
-                  required
-                  placeholder="XXXX-XXXX-XXXX-XXXX"
-                />
-                <label for="card-expiry">Expiry Date</label>
-                <input
-                  id="card-expiry"
-                  v-model="order.expiryDate"
-                  type="text"
-                  required
-                  placeholder="MM-YY"
-                />
-                <label for="card-security">CVV</label>
-                <input
-                  id="card-security"
-                  v-model="order.cvv"
-                  type="text"
-                  required
-                  placeholder="XXX"
-                />
-              </div>
-              <div id="card-container" class="credit-card">
-                <div class="card-front">
-                  <div class="card-header">
-                    <p v-html="whatisCardService.icon" class="card-logo"></p>
-                  </div>
-                  <div class="card-body">
-                    <h3 class="card-number">{{ order.cardNumber }}</h3>
-                    <div class="card-info">
-                      <h4 class="expiry-date">{{ order.expiryDate }}</h4>
-                      <h4 class="cvv">{{ order.cvv }}</h4>
+  
+              <!-- Card Information (shown if "Card" is selected) -->
+              <div v-if="order.paymentMethod === 'Card'" id="card-section">
+                <div id="card-information">
+                  <label for="card-number">Card Number</label>
+                  <input id="card-number" v-model="order.cardNumber" type="text" required placeholder="XXXX-XXXX-XXXX-XXXX" />
+                  <label for="card-expiry">Expiry Date</label>
+                  <input id="card-expiry" v-model="order.expiryDate" type="text" required placeholder="MM-YY" />
+                  <label for="card-security">CVV</label>
+                  <input id="card-security" v-model="order.cvv" type="text" required placeholder="XXX" />
+                </div>
+                <div id="card-container" class="credit-card">
+                  <div class="card-front">
+                    <div class="card-header">
+                      <p v-html="whatisCardService.icon" class="card-logo"></p>
+                    </div>
+                    <div class="card-body">
+                      <h3 class="card-number">{{ order.cardNumber }}</h3>
+                      <div class="card-info">
+                        <h4 class="expiry-date">{{ order.expiryDate }}</h4>
+                        <h4 class="cvv">{{ order.cvv }}</h4>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>              
-            </div>
-
-            <!--Paypal information-->
-            <div v-if="order.paymentMethod === 'PayPal'" id="paypal-section">
-        <div id="paypal-information">
-          <label for="paypal-email">PayPal Email</label>
-          <input
-            id="paypal-email"
-            v-model="order.paypalEmail"
-            type="email"
-            required
-            placeholder="Enter your PayPal email"
-          />
-          <label for="paypal-password">PayPal Password</label>
-          <input
-            id="paypal-password"
-            v-model="order.paypalPassword"
-            type="password"
-            required
-            placeholder="Enter your PayPal password"
-          />
-        </div>
-      </div>
-
-
-            <!-- Place Order and Back Buttons -->
-            <div class="buttonContainer">
-              <button class="placeOrder" @click="submitForm">
-                Place Order
-              </button>
-              <button class="backButton" @click="goBack">
-                Go Back
-              </button>
+              </div>
+  
+              <!-- PayPal Information (shown if "PayPal" is selected) -->
+              <div v-if="order.paymentMethod === 'PayPal'" id="paypal-section">
+                <div id="paypal-information">
+                  <label for="paypal-email">PayPal Email</label>
+                  <input id="paypal-email" v-model="order.paypalEmail" type="email" required placeholder="Enter your PayPal email" />
+                  <label for="paypal-password">PayPal Password</label>
+                  <input id="paypal-password" v-model="order.paypalPassword" type="password" required placeholder="Enter your PayPal password" />
+                </div>
+              </div>
+  
+              <!-- Place Order and Back Buttons -->
+              <div class="buttonContainer">
+                <button class="placeOrder" @click="gotoReviewsection">Review Order</button>
+                <button class="backButton" @click="goBack">Go Back</button>
+              </div>
             </div>
           </div>
         </div>
-        </div>
+  
+
+      </div>
     </div>
 
     <script type="text/javascript">
@@ -345,7 +315,7 @@
           },
           // Generate class image URL based on class name
           getClassImage(name) {
-            return `images/${name.toLowerCase()}.png`;
+            return `images/${name.toLowerCase()}.png` ;
           },
           // Add a class to the cart
           addToCart(classItem) {
@@ -412,10 +382,11 @@
             if (this.cart.length === 0) {
               alert("Please add items to your cart before proceeding.");
             } else {
-              this.showClasses = !this.showClasses;
-              this.showCheckout = !this.showCheckout;
-              this.showCart = !this.showCart;
+              this.showClasses = false;
+              this.showCheckout = true;
+              this.showCart = true;
               this.showForm = false;
+              this.showReview = false
             }
           },
           // Go back to the home page (classes list)
@@ -429,7 +400,7 @@
             if (this.cart.length === 0) {
               alert("Please add items to your cart before proceeding.");
             } else {
-              this.showCheckout = false;
+              this.showCart = false;
               this.showForm = true;
               // if (this.isFormValid()) {
 
@@ -449,9 +420,19 @@
             this.showCheckout = true;
             this.showClasses = false;
           },
-
+          gotoReviewsection(){
+            if(this.order.firstName && this.order.lastName && this.order.email && this.order.contact && this.order.paymentMethod) {
+              this.showForm = false;
+              this.showCart = false;
+              this.showReview = true;
+            }
+           else {
+                              alert('Please fill all fields');
+                          }
+           },
           submitForm() {
                       if (this.cart.length) {
+                          if (this.order.firstName && this.order.lastName && this.order.email && this.order.contact && this.order.paymentMethod) {
                               this.cart = [];
                               this.totalCartItemCount = 0;
                               alert('Order placed successfully!');
@@ -461,14 +442,78 @@
                               this.showCheckout = false;
                               this.showClasses = true;
                           }
-                          
-                      else {
+                          else {
+                              alert('Please fill all fields');
+                          }
+                      } else {
                           alert('Your cart is empty.');
                       }
                   },
           // Validate checkout form
-          
-        
+          isFormValid() {
+            const contactRegex = /^\+971\d{9}$/;
+            if (
+              !this.order.firstName ||
+              !this.order.lastName ||
+              !this.order.address ||
+              !this.order.contact ||
+              !this.order.email ||
+              !this.order.paymentMethod
+            ) {
+              return false;
+            }
+
+            if (this.order.paymentMethod === "Card") {
+           return (
+            this.order.cardNumber &&
+            this.order.expiryDate &&
+            this.order.cvv &&
+            this.isValidCardNumber(this.order.cardNumber) &&
+            this.isValidExpiryDate(this.order.expiryDate) &&
+          this.isValidCVV(this.order.cvv)
+        );
+      } else if (this.order.paymentMethod === "PayPal") {
+        // Validate PayPal fields
+        return (
+          this.isValidEmail(this.order.paypalEmail) &&
+          this.order.paypalPassword.length >= 6
+        );
+      }
+
+      return true;
+    },
+     // Validate PayPal email
+     isValidEmail(email) {
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      return emailRegex.test(email);
+    },
+          // Validate card number
+          isValidCardNumber(cardNumber) {
+            const regex = /^[0-9]{16}$/;
+            return regex.test(cardNumber);
+          },
+          // Validate expiry date
+          isValidExpiryDate(expiryDate) {
+            const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+            return regex.test(expiryDate);
+          },
+          // Validate CVV
+          isValidCVV(cvv) {
+            const regex = /^[0-9]{3}$/;
+            return regex.test(cvv);
+          },
+          // Validate contact number format
+          validateContact(event) {
+            const value = event.target.value;
+            const regex = /^\+971\d{9}$/;
+            if (!regex.test(value)) {
+              event.target.setCustomValidity(
+                "Please enter a valid contact number (e.g., +971000000000)"
+              );
+            } else {
+              event.target.setCustomValidity("");
+            }
+          },
           // Reset the checkout form
           resetForm() {
             this.order.firstName = "";
