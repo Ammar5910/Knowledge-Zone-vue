@@ -160,7 +160,84 @@
             <p class="totalValue">
               <strong>Total Value:</strong> {{ totalCartValue }} AED
             </p>
+            <!-- Payment Method Selection -->
+            <div id="payment-method" class="formGroup fullWidth">
+              <label>Payment Method:</label>
+              <div id="radio-section">
+                <label for="Cash">Cash</label>
+                <input  id="Cash"  type="radio"  v-model="order.paymentMethod"  name="method"  value="Cash"  required/>
+                <label for="Card">Card</label>
+                <input    id="Card"    type="radio"    v-model="order.paymentMethod"    name="method"    value="Card"    required  />
+                <label for="PayPal">PayPal</label>
+                <input    id="PayPal"    type="radio"    v-model="order.paymentMethod"    name="method"    value="PayPal"    required  />
+              </div>
+            </div>
 
+            <!-- Card Information (shown if "Card" is selected) -->
+            <div v-if="order.paymentMethod === 'Card'" id="card-section">
+              <div id="card-information">
+                <label for="card-number">Card Number</label>
+                <input
+                  id="card-number"
+                  v-model="order.cardNumber"
+                  type="text"
+                  required
+                  placeholder="XXXX-XXXX-XXXX-XXXX"
+                />
+                <label for="card-expiry">Expiry Date</label>
+                <input
+                  id="card-expiry"
+                  v-model="order.expiryDate"
+                  type="text"
+                  required
+                  placeholder="MM-YY"
+                />
+                <label for="card-security">CVV</label>
+                <input
+                  id="card-security"
+                  v-model="order.cvv"
+                  type="text"
+                  required
+                  placeholder="XXX"
+                />
+              </div>
+              <div id="card-container" class="credit-card">
+                <div class="card-front">
+                  <div class="card-header">
+                    <p v-html="whatisCardService.icon" class="card-logo"></p>
+                  </div>
+                  <div class="card-body">
+                    <h3 class="card-number">{{ order.cardNumber }}</h3>
+                    <div class="card-info">
+                      <h4 class="expiry-date">{{ order.expiryDate }}</h4>
+                      <h4 class="cvv">{{ order.cvv }}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>              
+            </div>
+
+            <!--Paypal information-->
+            <div v-if="order.paymentMethod === 'PayPal'" id="paypal-section">
+        <div id="paypal-information">
+          <label for="paypal-email">PayPal Email</label>
+          <input
+            id="paypal-email"
+            v-model="order.paypalEmail"
+            type="email"
+            required
+            placeholder="Enter your PayPal email"
+          />
+          <label for="paypal-password">PayPal Password</label>
+          <input
+            id="paypal-password"
+            v-model="order.paypalPassword"
+            type="password"
+            required
+            placeholder="Enter your PayPal password"
+          />
+        </div>
+      </div>
 
 
             <!-- Place Order and Back Buttons -->
@@ -198,7 +275,13 @@
             lastName: "",
             address: "",
             contact: "",
-            email: ""
+            email: "",
+            paymentMethod: "",
+            cardNumber: "", // For card payment
+            expiryDate: "", // For card expiry
+            cvv: "", // For card CVV
+            paypalEmail: "", // New PayPal field
+            paypalPassword: "", // New PayPal field
           },
           originalClasses: JSON.parse(JSON.stringify(classes)), // Save the initial state of classes
         },
@@ -220,7 +303,40 @@
               return this.sortOrder === "asc" ? comparison : -comparison;
             });
           },
-         
+          whatisCardService() {
+            // Only process if there is a card number
+            if (this.order.cardNumber) {
+              const firstDigit = this.order.cardNumber.trim().charAt(0);
+
+              // Check for Visa (starts with '4')
+              if (firstDigit === '4') {
+                return {
+                  service: "Visa",
+                  icon: "<i class='fa-brands fa-cc-visa'></i>"
+                };
+              }
+              // Check for MasterCard (starts with '5' or '2')
+              else if (firstDigit === '5' || firstDigit === '2') {
+                return {
+                  service: "MasterCard",
+                  icon: "<i class='fa-brands fa-cc-mastercard'></i>"
+                };
+              }
+              // If it starts with any other digit, classify as "Other"
+              else {
+                return {
+                  service: "Other",
+                  icon: "<i class='fa-solid fa-credit-card'></i>"
+                };
+              }
+            } else {
+              // Default to "Other" if the card number is empty
+              return {
+                service: "Other",
+                icon: "<i class='fa-solid fa-credit-card'></i>"
+              };
+            }
+          }
         },
         methods: {
           // Toggle the visibility of sort options
@@ -315,7 +431,16 @@
             } else {
               this.showCheckout = false;
               this.showForm = true;
-              
+              // if (this.isFormValid()) {
+
+              // } else {
+              //     alert('Please fill in all fields correctly.');
+              // }
+              // alert("Proceeding to checkout...");
+              //     // Clear cart and reset state after checkout
+              //     this.resetCartAndClasses();
+              //     this.resetForm();  // Reset the form
+              //     this.goHome(); // Go back to the home page
             }
           },
           goBack(){
@@ -335,22 +460,26 @@
                               this.showCart = false;
                               this.showCheckout = false;
                               this.showClasses = true;
-                      }
-                          
+                          }
                           
                       else {
                           alert('Your cart is empty.');
                       }
                   },
+          // Validate checkout form
           
-          },
+        
           // Reset the checkout form
           resetForm() {
             this.order.firstName = "";
             this.order.lastName = "";
             this.order.address = "";
             this.order.contact = "";
-            this.order.email = ""
+            this.order.email = "";
+            this.order.paymentMethod = "";
+            this.order.cardNumber = "";
+            this.order.expiryDate = "";
+            this.order.cvv = "";
           },
           // Reset cart and classes back to initial state
           resetCartAndClasses() {
@@ -359,7 +488,7 @@
             this.updateCartTotals();
           },
         },
-    {  });
+      });
     </script>
   </body>
 </html>
