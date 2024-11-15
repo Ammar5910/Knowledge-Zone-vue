@@ -41,7 +41,7 @@
               <p>Location: Education Center</p>
             </div>
           </div>
-  
+
           <!-- Sort Button (only shows when classes are visible) -->
           <button class="nav-button" v-if="showClasses" @click="toggleSort">
             <i class="fas fa-sort"></i> SORT
@@ -220,6 +220,40 @@
           </div>
         </div>
   
+        <!-- Review Section (Placeholder) -->
+          <!-- Review Section -->
+<div v-if="showReview" id="reviewOrder">
+  <h2>Order Review</h2>
+
+  <!-- Product List -->
+  <div v-for="item in cart" :key="item.name" class="order-item">
+    <p>
+      <strong>Product:</strong> {{ item.name }}
+    </p>
+    <p>
+      <strong>Quantity:</strong> {{ item.count }}
+    </p>
+    <p>
+      <strong>Price:</strong> ${{ (item.price * item.count).toFixed(2) }}
+    </p>
+    <hr />
+  </div>
+
+  <!-- Total Price -->
+  <div class="order-total">
+    <p><strong>Total Price:</strong> ${{ totalCartValue.toFixed(2) }}</p>
+  </div>
+
+  <!-- Order Details -->
+  <h3>Customer Details</h3>
+  <p><strong>First Name:</strong> {{ order.firstName }}</p>
+  <p><strong>Last Name:</strong> {{ order.lastName }}</p>
+  <p><strong>Address:</strong> {{ order.address }}</p>
+  <p><strong>Payment Method:</strong> {{ order.paymentMethod }}</p>
+
+  <!-- Submit Button -->
+  <button id="submitButton" v-on:click="submitForm">Place Order</button>
+</div>
 
       </div>
     </div>
@@ -232,6 +266,7 @@
           showCheckout: false, // Control visibility of checkout page
           showCart: false, // Control visibility of cart section
           showForm: false, // control visibility form
+          showReview: false, // shows review order after the checkout
           showSortOptions: false, // Show sorting options
           sortBy: "name", // Default sort criteria
           sortOrder: "asc", // Default sorting order
@@ -273,6 +308,10 @@
               return this.sortOrder === "asc" ? comparison : -comparison;
             });
           },
+           // Total Price Calculation
+          totalCartValue() {
+          return this.cart.reduce((total, item) => total + item.price * item.count, 0);
+           },
           whatisCardService() {
             // Only process if there is a card number
             if (this.order.cardNumber) {
@@ -429,7 +468,7 @@
            else {
                               alert('Please fill all fields');
                           }
-           },
+          },
           submitForm() {
                       if (this.cart.length) {
                           if (this.order.firstName && this.order.lastName && this.order.email && this.order.contact && this.order.paymentMethod) {

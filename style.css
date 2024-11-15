@@ -592,4 +592,47 @@ button {
 #radio-section > * {
     width: 50%;
 }
+#reviewOrder {
+    background: rgba(176, 234, 125, 0.3); /* Semi-green transparent background */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Soft border */
+    border-radius: 12px;
+    backdrop-filter: blur(10px); /* Glass effect */
+    box-shadow: 0 4px 15px rgba(214, 176, 24, 0.2); /* Soft shadow */
+    width: 90vw;
+    height: auto;
+    padding: 30px;
+    margin: 20px auto;
+    color: #333; /* Text color for contrast */
+    font-family: 'Arial', sans-serif;
+}
 
+#reviewOrder h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    color: #2d6a4f; /* Green tone for header */
+    text-align: center;
+}
+
+#reviewOrder p {
+    font-size: 1.2em;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+#submitButton {
+    background-color: #55b57b; 
+    color: #fff; /* White text */
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: block;
+    margin: 20px auto;
+}
+
+#submitButton:hover {
+    background-color: #1b4b35; /* Darker green on hover */
+    transform: scale(1.05); /* Slight zoom effect */
+}
