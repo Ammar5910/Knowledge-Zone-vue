@@ -37,7 +37,7 @@
             CONTACT
             <div class="dropdown-content">
               <p>Email: contact@knowledgezone.com</p>
-              <p>Phone: (123) 456-7890</p>
+              <p>Phone: (971) 713-2280</p>
               <p>Location: Education Center</p>
             </div>
           </div>
@@ -51,7 +51,7 @@
           <!-- Checkout Button showing total items in the cart (disabled on checkout page) -->
           <button class="nav-button checkout-btn" @click="switchToCheckout" :disabled="showCheckout">
             <i class="fas fa-shopping-cart"></i>
-            <span>{{ totalCartItemCount }}</span> CHECKOUT
+            <span>{{ totalCartItemCount }}</span> Cart
           </button>
   
           <!-- Home Button (only shows on the checkout page) -->
@@ -84,7 +84,7 @@
           
           <!-- Class rating -->
           <div class="rating">
-            <i class="fas fa-star" v-for="star in 5" :key="star"></i>
+            <i class="fas fa-star" v-for="star in 4" :key="star"></i>
           </div>
           
           <div class="price">${{ classItem.price }}</div>
@@ -295,23 +295,23 @@
           originalClasses: JSON.parse(JSON.stringify(classes)), // Save the initial state of classes
         },
         computed: {
-          // Filter classes based on search query
-          filteredClasses() {
-            return this.classes.filter((classItem) =>
-              classItem.name
-                .toLowerCase()
-                .includes(this.searchQuery.toLowerCase())
-            );
-          },
-          // Sort and filter the classes based on criteria
-          sortedAndFilteredClasses() {
-            return [...this.filteredClasses].sort((a, b) => {
-              let comparison = 0;
-              if (a[this.sortBy] < b[this.sortBy]) comparison = -1;
-              if (a[this.sortBy] > b[this.sortBy]) comparison = 1;
-              return this.sortOrder === "asc" ? comparison : -comparison;
-            });
-          },
+         // Filter classes based on search query for both name and location
+            filteredClasses() {
+              return this.classes.filter((classItem) =>
+                classItem.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                classItem.location.toLowerCase().includes(this.searchQuery.toLowerCase())
+              );
+            },
+            // Sort and filter the classes based on criteria
+            sortedAndFilteredClasses() {
+              return [...this.filteredClasses].sort((a, b) => {
+                let comparison = 0;
+                if (a[this.sortBy] < b[this.sortBy]) comparison = -1;
+                if (a[this.sortBy] > b[this.sortBy]) comparison = 1;
+                return this.sortOrder === "asc" ? comparison : -comparison;
+              });
+            },
+
            // Total Price Calculation
           totalCartValue() {
           return this.cart.reduce((total, item) => total + item.price * item.count, 0);

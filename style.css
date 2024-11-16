@@ -639,7 +639,7 @@ button {
 
 
 /* Search Bar */
-.search-bar {
+.search-box {
     padding: 0.5rem;
     border-radius: 6px;
     font-size: 1rem;
@@ -648,6 +648,6 @@ button {
     transition: box-shadow 0.3s;
     max-width: 500px;
 }
-.search-bar:focus {
+.search-box:focus {
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
 }
