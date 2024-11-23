@@ -9,4 +9,6 @@ let classes = [
   { name: 'Geography', price: 65, seats: 5, location: 'Ohio' },
   { name: 'Cooking Basics', price: 85, seats: 5, location: 'London' },
   { name: 'Kung Fu', price: 185, seats: 5, location: 'China' },
+  { name: 'Hacking', price: 185, seats: 5, location: 'United Kindom' },
+
 ];
