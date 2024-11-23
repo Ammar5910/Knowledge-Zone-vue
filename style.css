@@ -28,6 +28,11 @@ body {
     color: white;
     font-weight: 500;
 } */
+ a{
+    color: black;
+    text-decoration: none;
+
+ }
 .nav-main {
     background-color: #1b5e20;
     padding: 1rem 2rem;

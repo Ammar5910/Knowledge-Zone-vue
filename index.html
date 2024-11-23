@@ -38,8 +38,8 @@
         <div class="nav-link">
           CONTACT
           <div class="dropdown-content">
-            <p>Email: contact@knowledgezone.com</p>
-            <p>Phone: (971) 713-2280</p>
+            <p><a href="mailto:contact@knowledgezone.com">contact@knowledgezone.com</a></p>
+            <p><a href="tel:+971507132280">+971-507-132280</a></p>
             <p>Location: Education Center</p>
           </div>
         </div>
@@ -549,7 +549,7 @@
               };
 
               // Make the API call to create the order
-              fetch("http://localhost:3000/api/orders", {
+              fetch("https://knowledge-zone-back-end.onrender.com/api/orders", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -670,7 +670,7 @@
         },
 
         fetchData() {
-          fetch("http://localhost:3000/api/lessons")
+          fetch("https://knowledge-zone-back-end.onrender.com/api/lessons")
             .then((response) => response.json())
             .then((data) => {
               this.classes = data;
@@ -681,7 +681,7 @@
         },
         searchLessons(query, sortBy = this.sortBy, order = this.sortOrder) {
           // Construct the API URL with query parameters
-          const apiUrl = `http://localhost:3000/api/lessons/search?q=${query}&sortBy=${sortBy}&order=${order}`;
+          const apiUrl = `https://knowledge-zone-back-end.onrender.com/api/lessons/search?q=${query}&sortBy=${sortBy}&order=${order}`;
           fetch(apiUrl)
             .then((response) => response.json())
             .then((data) => {
