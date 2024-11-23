@@ -10,19 +10,6 @@
   <!-- Link to Vue.js library and external JavaScript file for functionality -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
   <script src="javascript/classes.js"></script>
-  <script>
-    // set the url to your server and route
-    fetch('http://localhost:3000/api/lessons', {
-      method: 'GET', // set the HTTP method as 'POST'
-    })
-      .then(response => response.json())
-      .then(responseJSON => {
-        this.classes = responseJSON;
-      })
-      .catch((error) => {
-        document.getElementById('error').innerText = error;
-      });
-  </script>
   <title>Knowledge Zone</title>
 </head>
 
@@ -389,6 +376,7 @@
           } else {
             this.cart.push({ ...classItem, count: 1 });
           }
+          console.log("this.cart --> ", JSON.parse(JSON.stringify(this.cart)));
           classItem.seats--;
           this.updateCartTotals();
         },
@@ -492,25 +480,111 @@
             alert('Please fill all fields');
           }
         },
+
         submitForm() {
           if (this.cart.length) {
-            if (this.order.firstName && this.order.lastName && this.order.email && this.order.contact && this.order.paymentMethod) {
-              this.cart = [];
-              this.totalCartItemCount = 0;
-              alert('Order placed successfully!');
-              this.paymentMethod = '';
-              this.showForm = false;
-              this.showCart = false;
-              this.showCheckout = false;
-              this.showClasses = true;
-            }
-            else {
-              alert('Please fill all fields');
+            if (
+              this.order.firstName &&
+              this.order.lastName &&
+              this.order.email &&
+              this.order.contact &&
+              this.order.paymentMethod // Ensure a payment method is selected
+            ) {
+              // Prepare customer details
+              const customer = {
+                firstName: this.order.firstName,
+                lastName: this.order.lastName,
+                email: this.order.email,
+                contact: this.order.contact,
+                address: this.order.address,
+              };
+
+              // Prepare lessons details
+              const lessons = this.cart.map((item) => ({
+                lessonId: item._id,
+                name: item.name,
+                price: item.price,
+                quantity: item.count,
+              }));
+
+              // Prepare payment method details
+              let paymentDetails = {};
+              if (this.order.paymentMethod === "Card") {
+                if (
+                  !this.order.cardNumber ||
+                  !this.order.expiryDate ||
+                  !this.order.cvv
+                ) {
+                  alert("Please fill in all card details.");
+                  return;
+                }
+                paymentDetails = {
+                  method: "Card",
+                  cardNumber: this.order.cardNumber,
+                  expiryDate: this.order.expiryDate,
+                  cvv: this.order.cvv,
+                };
+              } else if (this.order.paymentMethod === "PayPal") {
+                if (
+                  !this.order.paypalEmail ||
+                  !this.order.paypalPassword
+                ) {
+                  alert("Please fill in all PayPal details.");
+                  return;
+                }
+                paymentDetails = {
+                  method: "PayPal",
+                  paypalEmail: this.order.paypalEmail,
+                  paypalPassword: this.order.paypalPassword,
+                };
+              } else if (this.order.paymentMethod === "Cash") {
+                paymentDetails = { method: "Cash" };
+              }
+
+              // Prepare the payload
+              const payload = {
+                customer,
+                lessons,
+                paymentMethod: paymentDetails,
+              };
+
+              // Make the API call to create the order
+              fetch("http://localhost:3000/api/orders", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error("Failed to place the order");
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  // Clear the cart and reset the form
+                  this.cart = [];
+                  this.totalCartItemCount = 0;
+                  this.resetForm();
+                  alert("Order placed successfully!");
+                  this.showForm = false;
+                  this.showCart = false;
+                  this.showCheckout = false;
+                  this.showClasses = true;
+                })
+                .catch((error) => {
+                  console.error("Error placing order:", error);
+                  alert("Something went wrong. Please try again.");
+                });
+            } else {
+              alert("Please fill in all required fields.");
             }
           } else {
-            alert('Your cart is empty.');
+            alert("Your cart is empty.");
           }
         },
+
         // Validate checkout form
         isFormValid() {
           const contactRegex = /^\+971\d{9}$/;
