@@ -428,24 +428,16 @@
           } else {
             this.showCart = false;
             this.showForm = true;
-            // if (this.isFormValid()) {
-
-            // } else {
-            //     alert('Please fill in all fields correctly.');
-            // }
-            // alert("Proceeding to checkout...");
-            //     // Clear cart and reset state after checkout
-            //     this.resetCartAndClasses();
-            //     this.resetForm();  // Reset the form
-            //     this.goHome(); // Go back to the home page
           }
         },
+        // Go back to cart
         goBack() {
           this.showForm = false;
           this.showCart = true;
           this.showCheckout = true;
           this.showLessons = false;
         },
+        // Go to review section if form is valid
         gotoReviewsection() {
           if (this.isFormValid()) {
             this.showForm = false;
@@ -522,7 +514,7 @@
               };
 
               // Make the API call to create the order
-              fetch("http://localhost:3000/api/orders", {
+              fetch("https://knowledge-zone-back-end.onrender.com/api/orders", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -691,9 +683,9 @@
           this.cart = [];
           this.updateCartTotals();
         },
-
+        // Get all the lessons
         fetchData() {
-          fetch("http://localhost:3000/api/lessons")
+          fetch("https://knowledge-zone-back-end.onrender.com/api/lessons")
             .then((response) => response.json())
             .then((data) => {
               this.lessons = data;
@@ -702,9 +694,10 @@
               console.error("Error fetching lessons:", error);
             });
         },
+        // search lessons
         searchLessons(query, sortBy = this.sortBy, order = this.sortOrder) {
           // Construct the API URL with query parameters
-          const apiUrl = `http://localhost:3000/api/lessons/search?q=${query}&sortBy=${sortBy}&order=${order}`;
+          const apiUrl = `https://knowledge-zone-back-end.onrender.com/api/lessons/search?q=${query}&sortBy=${sortBy}&order=${order}`;
           fetch(apiUrl)
             .then((response) => response.json())
             .then((data) => {
@@ -720,10 +713,11 @@
         searchQuery(newQuery) {
           this.searchLessons(newQuery);
         },
-        // Watch for changes in sortBy and sortOrder, and call the search API
+        // Watch for changes in sortBy and call the search API
         sortBy(newSortBy) {
           this.searchLessons(this.searchQuery, newSortBy, this.sortOrder);
         },
+        // Watch for changes in sortOrder and call the search API
         sortOrder(newSortOrder) {
           this.searchLessons(this.searchQuery, this.sortBy, newSortOrder);
         },
