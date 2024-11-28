@@ -85,6 +85,7 @@ body {
     opacity: 0.5;
     transition: opacity 0.8s ease;
     z-index: 1001;
+    margin:-3px;
 }
 .nav-link:hover .dropdown-content {
     display: block;
@@ -147,7 +148,7 @@ body {
 }
 
 /* Classes Container */
-.classes-container {
+.lessons-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
