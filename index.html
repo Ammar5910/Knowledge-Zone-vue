@@ -9,10 +9,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <!-- Link to Vue.js library and external JavaScript file for functionality -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  <script src="video.js"></script>
   <title>Knowledge Zone</title>
 </head>
 
 <body>
+  <div class="intro-video">
+    <video autoplay muted loop id="introVideo">
+      <source src="intro.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  <div class="main-content hidden">
+
   <div id="app">
     <!-- Top Navigation -->
     <nav class="nav-top"></nav>
@@ -27,9 +36,13 @@
         <div class="nav-link">
           INFO
           <div class="dropdown-content">
-            <p>About Knowledge Zone</p>
-            <p>Our Services</p>
-            <p>Learning Resources</p>
+            <p>This web app allows students and
+              parents to explore and purchase after-
+              school classes and activities. Users can
+              browse lessons by subject, location,
+              price, and availability. The app offers an
+              intuitive shopping cart and checkout
+              experience for easy enrollment.</p>
           </div>
         </div>
 
@@ -266,7 +279,7 @@
 
     </div>
   </div>
-
+  </div>
   <script type="text/javascript">
     new Vue({
       el: "#app",

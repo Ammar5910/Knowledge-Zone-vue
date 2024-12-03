@@ -18,7 +18,12 @@ body {
     background-color: #f2f2f7;
     color: #333;
     line-height: 1.6;
+
 }
+.hidden {
+    display: none;
+  }
+
 
 /* Navbar Styles */
 /* .nav-top {
@@ -76,7 +81,7 @@ body {
     display: none;
     position: absolute;
     background-color: #e8f5e9;
-    min-width: 200px;
+    min-width: 300px;
     border-radius: 8px;
     padding: 1rem;
     top: 110%;
@@ -657,3 +662,21 @@ button {
 .search-box:focus {
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
 }
+
+
+
+
+.intro-video {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+  }
+  
+  #introVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
