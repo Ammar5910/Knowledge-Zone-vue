@@ -24,15 +24,7 @@ body {
     display: none;
   }
 
-
 /* Navbar Styles */
-/* .nav-top {
-    background-color: #f30000;
-    padding: 0.5rem 1rem;
-    text-align: center;
-    color: white;
-    font-weight: 500;
-} */
  a{
     color: black;
     text-decoration: none;
@@ -176,16 +168,10 @@ body {
     overflow: hidden;
 }
 .class-card:hover {
-    /* transform: scale(1.05); */
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
 }
-/* .class-card img {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    object-fit: cover;
-} */
+
 .class-card img {
     width: 150px;
     height: 150px;
@@ -430,10 +416,6 @@ button {
     transition: background-color 0.3s ease;
 }
 
-/* button:hover {
-    background-color: #0056b3;
-} */
-
 .buttonContainer {
     display: flex;
     justify-content: space-between;
@@ -648,7 +630,6 @@ button {
     transform: scale(1.05); /* Slight zoom effect */
 }
 
-
 /* Search Bar */
 .search-box {
     padding: 0.5rem;
@@ -662,9 +643,6 @@ button {
 .search-box:focus {
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
 }
-
-
-
 
 .intro-video {
     position: relative;
